@@ -7,6 +7,7 @@ const connection = require('./db');
 const path = require('path');
 const multer = require('multer');
 const fs = require('fs');
+const loginAttempts = {};
 
 const app = express();
 const PORT = 3000;
@@ -31,7 +32,7 @@ app.get('/api/userinfo', auth, (req, res) => {
     });
 });
 
-// Login MODIFICADO con cookies
+// Login con cookies
 app.post('/api/login', (req, res) => {
     const { usuario, password } = req.body;
     console.log('Login:', usuario);
@@ -40,36 +41,72 @@ app.post('/api/login', (req, res) => {
         return res.status(400).json({ error: 'Faltan datos' });
     }
 
+    
+    // CONTROL DE INTENTOS
+    
+    const now = Date.now();
+
+    if (!loginAttempts[usuario]) {
+        loginAttempts[usuario] = { count: 0, time: now };
+    }
+
+    const attempts = loginAttempts[usuario];
+
+    // reset después de 5 minutos
+    if (now - attempts.time > 5 * 60 * 1000) {
+        attempts.count = 0;
+    }
+
+    // bloqueo
+    if (attempts.count >= 3) {
+        return res.status(429).json({
+            error: 'Demasiados intentos. Intenta más tarde.'
+        });
+    }
+
     connection.query(
         'SELECT id, usuario, password, rol FROM usuarios WHERE usuario = ?',
         [usuario],
-        (err, rows) => {
+        async (err, rows) => {
             if (err) {
-                console.error('Error BD:', err);
                 return res.status(500).json({ error: 'Error en BD' });
             }
 
-            if (rows.length === 0 || password !== rows[0].password) {
+            if (rows.length === 0) {
+                attempts.count++;
+                attempts.time = now;
                 return res.status(401).json({ error: 'Credenciales inválidas' });
             }
 
             const u = rows[0];
+
+            
+            const ok = password === u.password;
+
+            if (!ok) {
+                attempts.count++;
+                attempts.time = now;
+                return res.status(401).json({ error: 'Credenciales inválidas' });
+            }
+
+            // reset si es correcto
+            attempts.count = 0;
+
             const token = jwt.sign(
                 { id: u.id, usuario: u.usuario, rol: u.rol },
                 JWT_SECRET,
                 { expiresIn: '2h' }
             );
 
-            // Enviar token en cookie segura
             res.cookie('token', token, {
                 httpOnly: true,
-                secure: false, // Cambiar a true en producción con HTTPS
+                secure: false,
                 sameSite: 'strict',
-                maxAge: 2 * 60 * 60 * 1000 // 2 horas
+                maxAge: 2 * 60 * 60 * 1000
             });
 
-            res.json({ 
-                usuario: u.usuario, 
+            res.json({
+                usuario: u.usuario,
                 rol: u.rol,
                 mensaje: 'Login exitoso'
             });
@@ -83,9 +120,9 @@ app.post('/api/logout', (req, res) => {
     res.json({ mensaje: 'Sesión cerrada' });
 });
 
-// Middleware auth MODIFICADO para cookies
+
 function auth(req, res, next) {
-    // Primero cookie, luego header (retrocompatibilidad)
+    
     let token = req.cookies.token;
     
     if (!token) {
@@ -128,7 +165,7 @@ app.get('/api/responsables', auth, (req, res) => {
     });
 });
 
-// Configuración de Multer
+
 const upload = multer({ dest: 'uploads/' });
 
 // consultar Proyectos

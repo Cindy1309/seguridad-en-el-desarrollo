@@ -1,4 +1,4 @@
-    // Verificar autenticación al cargar
+    
     window.addEventListener('load', async function () {
 
     try {
@@ -25,9 +25,7 @@
 });
 
 
-        // Si quieres que solo admin pueda crear/editar, descomenta:
-        // if (rol !== 'admin') document.getElementById('btnNuevo').style.display = 'none';
-
+        
 
     // Referencias DOM
     const listaProyectos = document.getElementById('listaProyectos');
@@ -43,13 +41,13 @@
     const inputFecha = document.getElementById('fecha');
     const inputPrioridad = document.getElementById('prioridad');
 
-    // Fecha mínima hoy
+    
     inputFecha.min = new Date().toISOString().split('T')[0];
 
-    // Botón Nuevo
+    
     btnNuevo.addEventListener('click', prepararModoCrear);
 
-    // Submit form
+
     formProyecto.addEventListener('submit', guardarOActualizar);
 
     const token = localStorage.getItem('token');
@@ -61,7 +59,7 @@
         };
     }
 
-    // GET proyectos (sin responsables, pero usando misma API)
+    
     async function cargarProyectos() {
         try {
             const response = await fetch('/api/proyectos', {
@@ -126,7 +124,7 @@
         });
     }
 
-    // CREATE o UPDATE
+    
     async function guardarOActualizar(event) {
         event.preventDefault();
 
@@ -214,7 +212,7 @@
         }
     }
 
-    // Navegación navbar
+    
     function irAlMenu() {
         window.location.href = 'index.html';
     }

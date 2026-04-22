@@ -6,11 +6,11 @@
     <title>Prácticas de Proyectos</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        body { display: none; } /* ← Oculto hasta autenticación */
+        body { display: none; } 
     </style>
 </head>
 <body>
-    <!-- Navbar -->
+    
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container">
             <a class="navbar-brand" href="#">Gestión de Prácticas</a>
@@ -38,7 +38,7 @@
         </div>
     </nav>
 
-    <!-- Contenido -->
+  
     <div class="container mt-4">
         <div class="row">
             <div class="col-12">
@@ -81,7 +81,7 @@
                     </div>
                 </div> 
             </div>
-            <!-- Bloque solo para admin -->
+           
             <div class="col-md-4 mb-3" id="cardGestion" style="display:none;">
                 <div class="card">
                     <div class="card-header bg-danger text-white">
@@ -96,21 +96,21 @@
         </div>
     </div>
 
-    <!-- ← SCRIPT PRINCIPAL CORREGIDO -->
+    
     <script type="module">
-        // ← 1. Verificar autenticación con cookies
+        
         async function verificarAuth() {
             try {
                 console.log('🔍 Verificando autenticación...');
                 
                 const response = await fetch('/api/userinfo', {
-                    credentials: 'include'  // ← Envía cookies automáticamente
+                    credentials: 'include'  
                 });
 
                 console.log('Status:', response.status);
 
                 if (!response.ok) {
-                    console.log('❌ No autenticado, redirigiendo...');
+                    console.log(' No autenticado, redirigiendo...');
                     window.location.href = 'login.html';
                     return;
                 }
@@ -118,31 +118,31 @@
                 const user = await response.json();
                 console.log('✅ Autenticado:', user);
 
-                // ← 2. Mostrar página
+                
                 document.body.style.display = 'block';
 
-                // ← 3. Mostrar usuario
+                
                 document.getElementById('userInfo').textContent = `${user.usuario} (${user.rol})`;
                 document.getElementById('userInfoDetalle').textContent = `${user.usuario} - Rol: ${user.rol}`;
 
-                // ← 4. Configurar permisos por rol
+                
                 if (user.rol === 'admin') {
                     document.getElementById('navImagenes').style.display = 'block';
                     document.getElementById('cardImagenes').style.display = 'block';
                     document.getElementById('cardGestion').style.display = 'block';
                 }
 
-                // ← 5. Hacer logout global
+                
                 window.logout = logout;
                 window.irAPractica = irAPractica;
 
             } catch (error) {
-                console.error('❌ Error auth:', error);
+                console.error(' Error auth:', error);
                 window.location.href = 'login.html';
             }
         }
 
-        // ← 6. Función logout con cookies
+        
         async function logout() {
             try {
                 await fetch('/api/logout', { 
@@ -155,7 +155,7 @@
             window.location.href = 'login.html';
         }
 
-        // ← 7. Función navegación (igual que antes)
+        
         function irAPractica(tipo) {
             switch(tipo) {
                 case 'basica':
@@ -173,7 +173,7 @@
             }
         }
 
-        // ← 8. EJECUTAR al cargar página
+        
         verificarAuth();
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

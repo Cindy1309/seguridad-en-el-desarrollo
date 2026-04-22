@@ -10,7 +10,7 @@ formLogin.addEventListener('submit', async (e) => {
     const usuario = document.getElementById('usuario').value.trim();
     const password = document.getElementById('password').value.trim();
 
-    // ← DEBUG: Verificar datos
+    
     console.log('Datos enviados:', { usuario, password });
 
     if (!usuario || !password) {
@@ -25,7 +25,7 @@ formLogin.addEventListener('submit', async (e) => {
             headers: {
                 'Content-Type': 'application/json'
             },
-            credentials: 'include', // ← Cookies
+            credentials: 'include', 
             body: JSON.stringify({ usuario, password })
         });
 

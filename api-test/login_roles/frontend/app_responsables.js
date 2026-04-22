@@ -1,4 +1,4 @@
-// Verificar autenticación al cargar
+
    window.addEventListener('load', async function () {
 
     try {
@@ -39,18 +39,18 @@ const inputFecha = document.getElementById('fecha');
 const inputPrioridad = document.getElementById('prioridad');
 const selectRespo = document.getElementById('responsables');
 
-// Fecha mínima hoy
+
 inputFecha.min = new Date().toISOString().split('T')[0];
 
-// Botón Nuevo
+
 btnNuevo.addEventListener('click', prepararModoCrear);
 
-// Submit form
+
 formProyecto.addEventListener('submit', guardarOActualizar);
 
 const token = localStorage.getItem('token');
 
-// Headers comunes con auth
+
 function getHeaders() {
     return {
         'Authorization': `Bearer ${token}`,
@@ -58,7 +58,7 @@ function getHeaders() {
     };
 }
 
-// GET proyectos (con JOIN ya hecho en backend)
+
 async function cargarProyectos() {
     try {
         const response = await fetch('/api/proyectos', {
@@ -80,7 +80,7 @@ async function cargarProyectos() {
     }
 }
 
-// GET responsables
+
 async function cargarResponsables() {
     try {
         const response = await fetch('/api/responsables', {
@@ -109,7 +109,7 @@ async function cargarResponsables() {
     }
 }
 
-// Mostrar proyectos
+
 function mostrarProyectos(proyectos) {
     listaProyectos.innerHTML = '';
     
@@ -161,7 +161,7 @@ function mostrarProyectos(proyectos) {
     });
 }
 
-// CREATE o UPDATE
+
 async function guardarOActualizar(event) {
     event.preventDefault();
     
@@ -198,7 +198,7 @@ async function guardarOActualizar(event) {
             throw new Error(err.error || 'Error en la operación');
         }
         
-        // Cerrar modal
+        
         const modal = bootstrap.Modal.getInstance(document.getElementById('modalProyecto'));
         modal.hide();
         formProyecto.reset();
@@ -263,7 +263,7 @@ async function eliminarProyecto(id) {
     }
 }
 
-// Logout igual que en index.html
+
 function logout() {
     
     localStorage.removeItem('usuario');
